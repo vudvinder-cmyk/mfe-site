@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МФЭ | Магазин Флорбольной Экипировки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mfe-red: #e31e24;
+            --mfe-black: #000000;
+            --mfe-white: #ffffff;
+            --mfe-gray: #f9f9f9;
+            --border: #eeeeee;
+        }
+
+        * { box-sizing: border-box; outline: none; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--mfe-white); color: var(--mfe-black); overflow-x: hidden; }
+
+        /* --- ПРЕЛОАДЕР (ЗАГРУЗКА С НОВЫМ ЛОГО) --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--mfe-black); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 10000;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .slava-logo-load { text-align: center; color: #fff; text-transform: uppercase; }
+        .slava-logo-load .small { font-size: 14px; letter-spacing: 4px; display: block; opacity: 0.7; }
+        .slava-logo-load .main { font-family: 'Orbitron', sans-serif; font-size: 70px; font-weight: 900; color: var(--mfe-red); line-height: 1; margin: 10px 0; }
+
+        .loader-bar { width: 250px; height: 2px; background: rgba(255,255,255,0.1); margin-top: 30px; position: relative; overflow: hidden; }
+        .loader-progress { position: absolute; width: 0%; height: 100%; background: var(--mfe-red); animation: load 2.5s forwards; }
+        @keyframes load { to { width: 100%; } }
+
+        /* --- ХЕДЕР --- */
+        header { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 1000; }
+        .nav-main { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; }
+        
+        /* ЛОГОТИП ПО СЕРЕДИНЕ (ОТ СЛАВЫ) */
+        .slava-header-logo { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #000; text-transform: uppercase; }
+        .slava-header-logo .s-text { font-size: 9px; font-weight: 800; letter-spacing: 2px; }
+        .slava-header-logo .m-text { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; color: var(--mfe-red); line-height: 0.9; margin: 2px 0; }
+
+        .menu { display: flex; justify-content: center; gap: 35px; border-top: 1px solid var(--border); }
+        .menu-item { position: relative; padding: 15px 0; font-weight: 800; font-size: 11px; text-transform: uppercase; cursor: pointer; }
+        .menu-item:hover { color: var(--mfe-red); }
+
+        /* MEGA MENU */
+        .mega {
+            position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            width: 100vw; background: #fff; border-top: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); display: none; padding: 40px 10%;
+            grid-template-columns: repeat(4, 1fr); z-index: 999;
+        }
+        .menu-item:hover .mega { display: grid; }
+        .mega h3 { font-size: 12px; margin-bottom: 20px; color: var(--mfe-red); text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .mega ul { list-style: none; padding: 0; }
+        .mega li { margin-bottom: 10px; font-size: 13px; color: #777; transition: 0.2s; cursor: pointer; }
+        .mega li:hover { color: #000; transform: translateX(5px); }
+
+        /* --- КОНТЕНТ --- */
+        .main-grid { display: grid; grid-template-columns: 280px 1fr; gap: 40px; padding: 40px 5%; }
+        .filter-box { margin-bottom: 35px; }
+        .filter-box h4 { font-size: 11px; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 5px; }
+        
+        input[type="range"] { width: 100%; accent-color: var(--mfe-red); cursor: pointer; }
+
+        .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .card { border: 1px solid var(--border); padding: 20px; transition: 0.4s; background: #fff; display: flex; flex-direction: column; }
+        .card:hover { border-color: #000; transform: translateY(-5px); }
+        .card img { width: 100%; height: 220px; object-fit: contain; margin-bottom: 15px; }
+        .card-meta { font-size: 10px; font-weight: 900; color: #bbb; text-transform: uppercase; }
+        .card-price { font-size: 18px; font-weight: 900; margin-top: 10px; }
+        .add-btn { width: 100%; margin-top: 15px; background: #000; color: #fff; border: none; padding: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .add-btn:hover { background: var(--mfe-red); }
+
+        /* --- ПОЛНОЭКРАННАЯ АДМИНКА --- */
+        #admin-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 11000; display: none; flex-direction: column;
+        }
+        .admin-nav { background: #000; color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .admin-content { display: grid; grid-template-columns: 380px 1fr; flex-grow: 1; }
+        .admin-form { padding: 40px; background: #f7f7f7; border-right: 1px solid #ddd; overflow-y: auto; }
+        .admin-list { padding: 40px; overflow-y: auto; }
+        .input-item { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; font-family: inherit; }
+
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th { text-align: left; padding: 12px; background: #eee; font-size: 11px; text-transform: uppercase; }
+        .admin-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div id="preloader">
+    <div class="slava-logo-load">
+        <span class="small">Магазин</span>
+        <span class="main">МФЭ</span>
+        <span class="small">Флорбольной Экипировки</span>
+    </div>
+    <div class="loader-bar"><div class="loader-progress"></div></div>
+</div>
+
+<header>
+    <div class="nav-main">
+        <div style="width: 150px;"></div> <div class="slava-header-logo">
+            <span class="s-text">Магазин</span>
+            <span class="m-text">МФЭ</span>
+            <span class="s-text">Флорбольной Экипировки</span>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <button onclick="toggleAdmin(true)" style="background:none; border:1px solid #000; padding:8px 15px; font-size:10px; font-weight:900; cursor:pointer;">АДМИН</button>
+            <button style="background:#000; color:#fff; border:none; padding:8px 15px; font-size:10px; font-weight:900; cursor:pointer;">КОРЗИНА (0)</button>
+        </div>
+    </div>
+    
+    <nav class="menu">
+        <div class="menu-item">
+            Игроки
+            <div class="mega">
+                <div class="mega-col">
+                    <h3>Полевые</h3>
+                    <ul>
+                        <li onclick="filter('p_sticks')">Клюшки (ленты, крюки)</li>
+                        <li onclick="filter('p_shoes')">Кроссовки (стельки, шнурки)</li>
+                        <li onclick="filter('p_helm')">Шлемы (визоры, решетки)</li>
+                    </ul>
+                </div>
+                <div class="mega-col">
+                    <h3>Вратари</h3>
+                    <ul>
+                        <li onclick="filter('g_shoes')">Кроссовки и стельки</li>
+                        <li onclick="filter('g_helm')">Шлем (Аксессуары)</li>
+                        <li onclick="filter('g_shields')">Щитки (Аксессуары)</li>
+                        <li onclick="filter('g_def')">Защита (Нагрудники)</li>
+                    </ul>
+                </div>
+                <div class="mega-col">
+                    <h3>Аксессуары</h3>
+                    <ul>
+                        <li onclick="filter('acc')">Бутылки и ленты</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="menu-item">
+            Клубы
+            <div class="mega">
+                <div class="mega-col">
+                    <h3>Форма на заказ</h3>
+                    <ul><li>Игровая</li><li>Тренировочная</li></ul>
+                </div>
+                <div class="mega-col">
+                    <h3>Раздевалка</h3>
+                    <ul><li>Переноски</li><li>Инвентарь</li></ul>
+                </div>
+            </div>
+        </div>
+        <div class="menu-item">Сертификаты</div>
+    </nav>
+</header>
+
+<div class="main-grid">
+    <aside>
+        <div class="filter-box">
+            <h4>Цена до</h4>
+            <input type="range" id="price-range" min="0" max="100000" step="1000" value="100000" oninput="updatePrice(this.value)">
+            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:900; margin-top:10px;">
+                <span>0 ₽</span><span id="price-val">100 000 ₽</span>
+            </div>
+        </div>
+        <div class="filter-box">
+            <h4>Бренды</h4>
+            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> PRO</label>
+            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> BRO</label>
+            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> SPORT</label>
+        </div>
+        <div class="filter-box">
+            <h4>Модель</h4>
+            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> 1P</label>
+            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> 3B</label>
+        </div>
+    </aside>
+    <main><div class="products" id="catalog"></div></main>
+</div>
+
+<div id="admin-screen">
+    <div class="admin-nav">
+        <h2 style="font-family:'Orbitron';">MFE_CMS_SYSTEM</h2>
+        <button onclick="toggleAdmin(false)" style="background:var(--mfe-red); color:#fff; border:none; padding:10px 30px; font-weight:900; cursor:pointer;">ВЫХОД</button>
+    </div>
+    <div class="admin-content">
+        <div class="admin-form">
+            <h3>Добавить товар</h3>
+            <input type="text" id="adm-title" class="input-item" placeholder="Название">
+            <input type="number" id="adm-price" class="input-item" placeholder="Цена">
+            <select id="adm-brand" class="input-item"><option>PRO</option><option>BRO</option><option>SPORT</option></select>
+            <select id="adm-model" class="input-item"><option>1P</option><option>3B</option></select>
+            <select id="adm-cat" class="input-item">
+                <option value="p_sticks">Клюшки</option>
+                <option value="p_shoes">Кроссовки</option>
+                <option value="g_shields">Щитки</option>
+            </select>
+            <button onclick="addNewProduct()" class="add-btn" style="width:100%; height:60px;">СОХРАНИТЬ</button>
+        </div>
+        <div class="admin-list"><table class="admin-table"><thead><tr><th>Товар</th><th>Цена</th><th>Действие</th></tr></thead><tbody id="admin-table-body"></tbody></table></div>
+    </div>
+</div>
+
+<script>
+    let products = [
+        { id: 1, cat: 'p_sticks', brand: 'PRO', model: '1P', title: 'Клюшка МФЭ PRO 1P', price: 22000, img: 'https://via.placeholder.com/300/fff/000?text=STICK+1P' },
+        { id: 2, cat: 'g_shields', brand: 'BRO', model: '3B', title: 'Щитки BRO 3B', price: 34500, img: 'https://via.placeholder.com/300/fff/000?text=SHIELDS+3B' }
+    ];
+
+    window.onload = () => { setTimeout(() => { document.getElementById('preloader').style.transform = 'translateY(-100%)'; render(); }, 2500); };
+
+    function updatePrice(v) { document.getElementById('price-val').innerText = parseInt(v).toLocaleString() + ' ₽'; render(); }
+
+    function render(f = null) {
+        const grid = document.getElementById('catalog');
+        const max = document.getElementById('price-range').value;
+        const filtered = f ? products.filter(p => p.cat === f && p.price <= max) : products.filter(p => p.price <= max);
+        grid.innerHTML = filtered.map(p => `
+            <div class="card">
+                <div class="card-meta">${p.brand} // ${p.model}</div>
+                <img src="${p.img}">
+                <div style="font-weight:700; font-size:14px;">${p.title}</div>
+                <div class="card-price">${p.price.toLocaleString()} ₽</div>
+                <button class="add-btn">Купить</button>
+            </div>
+        `).join('');
+    }
+
+    function filter(c) { render(c); }
+    function toggleAdmin(s) { document.getElementById('admin-screen').style.display = s ? 'flex' : 'none'; if(s) updateAdminList(); }
+
+    function addNewProduct() {
+        const title = document.getElementById('adm-title').value;
+        const price = document.getElementById('adm-price').value;
+        const brand = document.getElementById('adm-brand').value;
+        const model = document.getElementById('adm-model').value;
+        const cat = document.getElementById('adm-cat').value;
+        if(title && price) {
+            products.push({ id: Date.now(), cat, brand, model, title, price: parseInt(price), img: 'https://via.placeholder.com/300/fff/000?text=MFE+NEW' });
+            render(); updateAdminList(); alert('Успешно!');
+        }
+    }
+
+    function updateAdminList() {
+        document.getElementById('admin-table-body').innerHTML = products.map(p => `
+            <tr><td>${p.title}</td><td>${p.price} ₽</td>
+            <td><button onclick="removeP(${p.id})" style="color:red; background:none; border:none; cursor:pointer;">УДАЛИТЬ</button></td></tr>
+        `).join('');
+    }
+
+    function removeP(id) { products = products.filter(p => p.id !== id); updateAdminList(); render(); }
+</script>
+</body>
+</html>
