@@ -4,257 +4,754 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>МФЭ | Магазин Флорбольной Экипировки</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    
     <style>
+        /* =========================================
+           ОСНОВНЫЕ ПЕРЕМЕННЫЕ И СТИЛИ
+           ========================================= */
         :root {
             --mfe-red: #e31e24;
             --mfe-black: #000000;
             --mfe-white: #ffffff;
-            --mfe-gray: #f9f9f9;
-            --border: #eeeeee;
+            --mfe-gray-light: #f4f4f4;
+            --mfe-gray-dark: #333333;
+            --border-color: #dddddd;
+            --adm-bg: #1a1a1a;
         }
 
-        * { box-sizing: border-box; outline: none; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--mfe-white); color: var(--mfe-black); overflow-x: hidden; }
-
-        /* --- ПРЕЛОАДЕР (ЗАГРУЗКА С НОВЫМ ЛОГО) --- */
-        #preloader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--mfe-black); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 10000;
-            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
         }
-        .slava-logo-load { text-align: center; color: #fff; text-transform: uppercase; }
-        .slava-logo-load .small { font-size: 14px; letter-spacing: 4px; display: block; opacity: 0.7; }
-        .slava-logo-load .main { font-family: 'Orbitron', sans-serif; font-size: 70px; font-weight: 900; color: var(--mfe-red); line-height: 1; margin: 10px 0; }
 
-        .loader-bar { width: 250px; height: 2px; background: rgba(255,255,255,0.1); margin-top: 30px; position: relative; overflow: hidden; }
-        .loader-progress { position: absolute; width: 0%; height: 100%; background: var(--mfe-red); animation: load 2.5s forwards; }
-        @keyframes load { to { width: 100%; } }
-
-        /* --- ХЕДЕР --- */
-        header { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 1000; }
-        .nav-main { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; }
-        
-        /* ЛОГОТИП ПО СЕРЕДИНЕ (ОТ СЛАВЫ) */
-        .slava-header-logo { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #000; text-transform: uppercase; }
-        .slava-header-logo .s-text { font-size: 9px; font-weight: 800; letter-spacing: 2px; }
-        .slava-header-logo .m-text { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; color: var(--mfe-red); line-height: 0.9; margin: 2px 0; }
-
-        .menu { display: flex; justify-content: center; gap: 35px; border-top: 1px solid var(--border); }
-        .menu-item { position: relative; padding: 15px 0; font-weight: 800; font-size: 11px; text-transform: uppercase; cursor: pointer; }
-        .menu-item:hover { color: var(--mfe-red); }
-
-        /* MEGA MENU */
-        .mega {
-            position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            width: 100vw; background: #fff; border-top: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); display: none; padding: 40px 10%;
-            grid-template-columns: repeat(4, 1fr); z-index: 999;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--mfe-white);
+            color: var(--mfe-black);
+            line-height: 1.6;
         }
-        .menu-item:hover .mega { display: grid; }
-        .mega h3 { font-size: 12px; margin-bottom: 20px; color: var(--mfe-red); text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .mega ul { list-style: none; padding: 0; }
-        .mega li { margin-bottom: 10px; font-size: 13px; color: #777; transition: 0.2s; cursor: pointer; }
-        .mega li:hover { color: #000; transform: translateX(5px); }
 
-        /* --- КОНТЕНТ --- */
-        .main-grid { display: grid; grid-template-columns: 280px 1fr; gap: 40px; padding: 40px 5%; }
-        .filter-box { margin-bottom: 35px; }
-        .filter-box h4 { font-size: 11px; text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 5px; }
-        
-        input[type="range"] { width: 100%; accent-color: var(--mfe-red); cursor: pointer; }
-
-        .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .card { border: 1px solid var(--border); padding: 20px; transition: 0.4s; background: #fff; display: flex; flex-direction: column; }
-        .card:hover { border-color: #000; transform: translateY(-5px); }
-        .card img { width: 100%; height: 220px; object-fit: contain; margin-bottom: 15px; }
-        .card-meta { font-size: 10px; font-weight: 900; color: #bbb; text-transform: uppercase; }
-        .card-price { font-size: 18px; font-weight: 900; margin-top: 10px; }
-        .add-btn { width: 100%; margin-top: 15px; background: #000; color: #fff; border: none; padding: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
-        .add-btn:hover { background: var(--mfe-red); }
-
-        /* --- ПОЛНОЭКРАННАЯ АДМИНКА --- */
-        #admin-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 11000; display: none; flex-direction: column;
+        /* =========================================
+           ШАПКА САЙТА (HEADER)
+           ========================================= */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1000;
         }
-        .admin-nav { background: #000; color: #fff; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; }
-        .admin-content { display: grid; grid-template-columns: 380px 1fr; flex-grow: 1; }
-        .admin-form { padding: 40px; background: #f7f7f7; border-right: 1px solid #ddd; overflow-y: auto; }
-        .admin-list { padding: 40px; overflow-y: auto; }
-        .input-item { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; font-family: inherit; }
 
-        .admin-table { width: 100%; border-collapse: collapse; }
-        .admin-table th { text-align: left; padding: 12px; background: #eee; font-size: 11px; text-transform: uppercase; }
-        .admin-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            min-height: 90px;
+        }
+
+        /* ЛОГОТИП ОТ СЛАВЫ */
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .logo-container .top-label {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .logo-container .main-mfe {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--mfe-red);
+            line-height: 0.9;
+            margin: 2px 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .action-item {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            transition: 0.2s;
+        }
+
+        .action-item:hover {
+            color: var(--mfe-red);
+        }
+
+        .counter-badge {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: var(--mfe-red);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        /* НАВИГАЦИЯ */
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            border-top: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        .nav-link {
+            padding: 18px 10px;
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #555;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--mfe-red);
+            box-shadow: inset 0 -3px 0 var(--mfe-red);
+        }
+
+        /* =========================================
+           ОСНОВНОЙ КОНТЕНТ (GRID)
+           ========================================= */
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            padding: 40px 5%;
+        }
+
+        /* БОКОВАЯ ПАНЕЛЬ (ФИЛЬТРЫ) */
+        .sidebar-filter {
+            position: sticky;
+            top: 150px;
+        }
+
+        .filter-section {
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-section h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+            accent-color: var(--mfe-red);
+            cursor: pointer;
+        }
+
+        .brand-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        /* КАТАЛОГ ТОВАРОВ */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            background: #fff;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            border-color: var(--mfe-red);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+
+        .card-brand {
+            font-size: 10px;
+            font-weight: 900;
+            color: #bbb;
+            text-transform: uppercase;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin: 8px 0;
+            height: 45px;
+            overflow: hidden;
+        }
+
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .price-current {
+            font-weight: 900;
+            font-size: 20px;
+            color: var(--mfe-red);
+        }
+
+        .price-old {
+            font-size: 14px;
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        /* =========================================
+           МОДАЛЬНЫЕ ОКНА
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-body {
+            background: #fff;
+            width: 95%;
+            max-width: 1100px;
+            height: 85vh;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            position: relative;
+            animation: modalSlide 0.4s ease;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 35px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .modal-gallery {
+            background: #f8f8f8;
+            padding: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-info {
+            padding: 50px;
+            overflow-y: auto;
+            border-left: 1px solid #eee;
+        }
+
+        /* АДМИНКА */
+        #admin-panel {
+            grid-template-columns: 260px 1fr;
+            background: #f0f2f5;
+        }
+
+        .admin-sidebar {
+            background: var(--adm-bg);
+            color: #fff;
+            padding: 30px;
+        }
+
+        .admin-form-container {
+            padding: 40px;
+            background: #fff;
+            margin: 30px;
+            border-radius: 4px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+        .mfe-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dcdcdc;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .mfe-input:focus {
+            border-color: var(--mfe-red);
+        }
+
+        /* КНОПКИ */
+        .mfe-btn {
+            background: var(--mfe-black);
+            color: #fff;
+            border: none;
+            padding: 16px 25px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .mfe-btn:hover {
+            background: var(--mfe-red);
+        }
+
+        .btn-secondary {
+            background: #eee;
+            color: #000;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
 
-<div id="preloader">
-    <div class="slava-logo-load">
-        <span class="small">Магазин</span>
-        <span class="main">МФЭ</span>
-        <span class="small">Флорбольной Экипировки</span>
-    </div>
-    <div class="loader-bar"><div class="loader-progress"></div></div>
-</div>
+    <header>
+        <div class="header-top">
+            <div style="width: 150px;">
+                <button onclick="toggleAdmin(true)" class="mfe-btn" style="padding: 8px; font-size: 9px; width: auto;">CRM АДМИН</button>
+            </div>
+            
+            <a class="logo-container" onclick="location.reload()">
+                <span class="top-label">Магазин</span>
+                <span class="main-mfe">МФЭ</span>
+                <span class="top-label">Флорбольной Экипировки</span>
+            </a>
 
-<header>
-    <div class="nav-main">
-        <div style="width: 150px;"></div> <div class="slava-header-logo">
-            <span class="s-text">Магазин</span>
-            <span class="m-text">МФЭ</span>
-            <span class="s-text">Флорбольной Экипировки</span>
+            <div class="header-actions">
+                <div class="action-item" onclick="showSideModal('fav')">❤️ <span class="counter-badge" id="fav-count">0</span></div>
+                <div class="action-item" onclick="showSideModal('cart')">🛒 <span class="counter-badge" id="cart-count">0</span></div>
+                <div class="action-item" onclick="toggleAuth(true)" id="user-display">👤</div>
+            </div>
         </div>
-        <div style="display: flex; gap: 15px;">
-            <button onclick="toggleAdmin(true)" style="background:none; border:1px solid #000; padding:8px 15px; font-size:10px; font-weight:900; cursor:pointer;">АДМИН</button>
-            <button style="background:#000; color:#fff; border:none; padding:8px 15px; font-size:10px; font-weight:900; cursor:pointer;">КОРЗИНА (0)</button>
-        </div>
+
+        <nav class="navigation">
+            <div class="nav-link active" onclick="changeCategory('all', this)">Все товары</div>
+            <div class="nav-link" onclick="changeCategory('Полевые', this)">Полевые</div>
+            <div class="nav-link" onclick="changeCategory('Вратари', this)">Вратари</div>
+            <div class="nav-link" onclick="changeCategory('Клубы', this)">Клубы</div>
+            <div class="nav-link" onclick="changeCategory('Заказ формы', this)">Заказ формы</div>
+        </nav>
+    </header>
+
+    <div class="content-wrapper">
+        <aside class="sidebar-filter">
+            <div class="filter-section">
+                <h4>Цена до: <span id="price-label">1 000 000</span> ₽</h4>
+                <input type="range" id="price-range" min="0" max="1000000" step="5000" value="1000000" oninput="handlePriceChange(this.value)">
+            </div>
+            
+            <div class="filter-section">
+                <h4>Бренды</h4>
+                <div id="brand-checklist">
+                    <label class="brand-label"><input type="checkbox" value="PRO" checked onchange="applyFilters()"> PRO</label>
+                    <label class="brand-label"><input type="checkbox" value="BRO" checked onchange="applyFilters()"> BRO</label>
+                    <label class="brand-label"><input type="checkbox" value="SPORT" checked onchange="applyFilters()"> SPORT</label>
+                </div>
+            </div>
+        </aside>
+
+        <main>
+            <div class="product-grid" id="product-container">
+                </div>
+        </main>
     </div>
-    
-    <nav class="menu">
-        <div class="menu-item">
-            Игроки
-            <div class="mega">
-                <div class="mega-col">
-                    <h3>Полевые</h3>
-                    <ul>
-                        <li onclick="filter('p_sticks')">Клюшки (ленты, крюки)</li>
-                        <li onclick="filter('p_shoes')">Кроссовки (стельки, шнурки)</li>
-                        <li onclick="filter('p_helm')">Шлемы (визоры, решетки)</li>
-                    </ul>
+
+    <div id="product-modal" class="modal-overlay" onclick="if(event.target == this) this.style.display='none'">
+        <div class="modal-body">
+            <span class="modal-close" onclick="document.getElementById('product-modal').style.display='none'">&times;</span>
+            <div class="modal-gallery" id="modal-img-wrap"></div>
+            <div class="modal-info">
+                <div id="modal-brand-tag" style="color: var(--mfe-red); font-weight: 900; font-size: 12px; margin-bottom: 10px;"></div>
+                <h2 id="modal-title" style="font-size: 28px; margin-bottom: 15px;"></h2>
+                <div id="modal-specs" style="color: #666; font-size: 14px; margin-bottom: 25px;"></div>
+                
+                <div style="background: #fdfdfd; padding: 20px; border: 1px solid #eee; margin-bottom: 30px;">
+                    <div id="modal-old-price" class="price-old"></div>
+                    <div id="modal-new-price" class="price-current" style="font-size: 36px;"></div>
+                    <div id="modal-stock" style="font-size: 12px; color: #27ae60; font-weight: 700; margin-top: 5px;"></div>
                 </div>
-                <div class="mega-col">
-                    <h3>Вратари</h3>
-                    <ul>
-                        <li onclick="filter('g_shoes')">Кроссовки и стельки</li>
-                        <li onclick="filter('g_helm')">Шлем (Аксессуары)</li>
-                        <li onclick="filter('g_shields')">Щитки (Аксессуары)</li>
-                        <li onclick="filter('g_def')">Защита (Нагрудники)</li>
-                    </ul>
-                </div>
-                <div class="mega-col">
-                    <h3>Аксессуары</h3>
-                    <ul>
-                        <li onclick="filter('acc')">Бутылки и ленты</li>
-                    </ul>
+
+                <button class="mfe-btn" id="main-buy-btn">Добавить в корзину</button>
+                <button class="mfe-btn btn-secondary" id="main-fav-btn">В избранное</button>
+                <button class="mfe-btn btn-secondary" style="font-size: 10px;" onclick="alert('Ссылка скопирована!')">Поделиться товаром</button>
+                
+                <div style="margin-top: 40px;">
+                    <h4 style="text-transform: uppercase; font-size: 11px; margin-bottom: 10px;">Описание</h4>
+                    <p style="font-size: 14px; color: #555; line-height: 1.8;">Профессиональное решение для тех, кто ценит качество МФЭ. Данная модель прошла тестирование ведущими игроками лиги.</p>
                 </div>
             </div>
         </div>
-        <div class="menu-item">
-            Клубы
-            <div class="mega">
-                <div class="mega-col">
-                    <h3>Форма на заказ</h3>
-                    <ul><li>Игровая</li><li>Тренировочная</li></ul>
-                </div>
-                <div class="mega-col">
-                    <h3>Раздевалка</h3>
-                    <ul><li>Переноски</li><li>Инвентарь</li></ul>
-                </div>
-            </div>
-        </div>
-        <div class="menu-item">Сертификаты</div>
-    </nav>
-</header>
-
-<div class="main-grid">
-    <aside>
-        <div class="filter-box">
-            <h4>Цена до</h4>
-            <input type="range" id="price-range" min="0" max="100000" step="1000" value="100000" oninput="updatePrice(this.value)">
-            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:900; margin-top:10px;">
-                <span>0 ₽</span><span id="price-val">100 000 ₽</span>
-            </div>
-        </div>
-        <div class="filter-box">
-            <h4>Бренды</h4>
-            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> PRO</label>
-            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> BRO</label>
-            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> SPORT</label>
-        </div>
-        <div class="filter-box">
-            <h4>Модель</h4>
-            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> 1P</label>
-            <label style="display:block; font-size:13px; margin-bottom:8px;"><input type="checkbox" checked> 3B</label>
-        </div>
-    </aside>
-    <main><div class="products" id="catalog"></div></main>
-</div>
-
-<div id="admin-screen">
-    <div class="admin-nav">
-        <h2 style="font-family:'Orbitron';">MFE_CMS_SYSTEM</h2>
-        <button onclick="toggleAdmin(false)" style="background:var(--mfe-red); color:#fff; border:none; padding:10px 30px; font-weight:900; cursor:pointer;">ВЫХОД</button>
     </div>
-    <div class="admin-content">
-        <div class="admin-form">
-            <h3>Добавить товар</h3>
-            <input type="text" id="adm-title" class="input-item" placeholder="Название">
-            <input type="number" id="adm-price" class="input-item" placeholder="Цена">
-            <select id="adm-brand" class="input-item"><option>PRO</option><option>BRO</option><option>SPORT</option></select>
-            <select id="adm-model" class="input-item"><option>1P</option><option>3B</option></select>
-            <select id="adm-cat" class="input-item">
-                <option value="p_sticks">Клюшки</option>
-                <option value="p_shoes">Кроссовки</option>
-                <option value="g_shields">Щитки</option>
-            </select>
-            <button onclick="addNewProduct()" class="add-btn" style="width:100%; height:60px;">СОХРАНИТЬ</button>
-        </div>
-        <div class="admin-list"><table class="admin-table"><thead><tr><th>Товар</th><th>Цена</th><th>Действие</th></tr></thead><tbody id="admin-table-body"></tbody></table></div>
-    </div>
-</div>
 
-<script>
-    let products = [
-        { id: 1, cat: 'p_sticks', brand: 'PRO', model: '1P', title: 'Клюшка МФЭ PRO 1P', price: 22000, img: 'https://via.placeholder.com/300/fff/000?text=STICK+1P' },
-        { id: 2, cat: 'g_shields', brand: 'BRO', model: '3B', title: 'Щитки BRO 3B', price: 34500, img: 'https://via.placeholder.com/300/fff/000?text=SHIELDS+3B' }
-    ];
-
-    window.onload = () => { setTimeout(() => { document.getElementById('preloader').style.transform = 'translateY(-100%)'; render(); }, 2500); };
-
-    function updatePrice(v) { document.getElementById('price-val').innerText = parseInt(v).toLocaleString() + ' ₽'; render(); }
-
-    function render(f = null) {
-        const grid = document.getElementById('catalog');
-        const max = document.getElementById('price-range').value;
-        const filtered = f ? products.filter(p => p.cat === f && p.price <= max) : products.filter(p => p.price <= max);
-        grid.innerHTML = filtered.map(p => `
-            <div class="card">
-                <div class="card-meta">${p.brand} // ${p.model}</div>
-                <img src="${p.img}">
-                <div style="font-weight:700; font-size:14px;">${p.title}</div>
-                <div class="card-price">${p.price.toLocaleString()} ₽</div>
-                <button class="add-btn">Купить</button>
+    <div id="admin-modal" class="modal-overlay" style="align-items: flex-start;">
+        <div class="modal-body" id="admin-panel" style="width: 100%; height: 100vh; max-width: none;">
+            <div class="admin-sidebar">
+                <h2 style="font-family: 'Orbitron'; color: var(--mfe-red); margin-bottom: 40px;">MFE_CORE</h2>
+                <div style="font-size: 13px; font-weight: 700; display: flex; flex-direction: column; gap: 20px;">
+                    <div style="color: var(--mfe-red);">📦 ТОВАРЫ И СКЛАД</div>
+                    <div style="opacity: 0.3;">📊 АНАЛИТИКА ТРАФИКА</div>
+                    <div style="opacity: 0.3;">📨 ЗАКАЗЫ КЛИЕНТОВ</div>
+                    <div style="opacity: 0.3;">⚙️ НАСТРОЙКИ САЙТА</div>
+                </div>
             </div>
-        `).join('');
-    }
+            <div style="overflow-y: auto;">
+                <div style="padding: 20px 40px; background: #fff; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 16px;">ДОБАВЛЕНИЕ НОВОЙ ПОЗИЦИИ В КАТАЛОГ</h3>
+                    <button class="mfe-btn" onclick="toggleAdmin(false)" style="width: auto; padding: 10px 30px;">ВЫЙТИ ИЗ CRM</button>
+                </div>
+                
+                <div class="admin-form-container">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                        <div class="input-group">
+                            <label>Название товара</label>
+                            <input type="text" id="adm-name" class="mfe-input" placeholder="Введите название...">
+                        </div>
+                        <div class="input-group">
+                            <label>Бренд</label>
+                            <select id="adm-brand" class="mfe-input">
+                                <option>PRO</option>
+                                <option>BRO</option>
+                                <option>SPORT</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Цена продажи (₽)</label>
+                            <input type="number" id="adm-price" class="mfe-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Старая цена (для скидки)</label>
+                            <input type="number" id="adm-old" class="mfe-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Модель (РУЧНОЙ ВВОД)</label>
+                            <input type="text" id="adm-model" class="mfe-input" placeholder="Напр: 4p-Turbo">
+                        </div>
+                        <div class="input-group">
+                            <label>Сфера отображения</label>
+                            <select id="adm-cat" class="mfe-input">
+                                <option>Полевые</option>
+                                <option>Вратари</option>
+                                <option>Клубы</option>
+                                <option>Заказ формы</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Цвет</label>
+                            <input type="text" id="adm-color" class="mfe-input">
+                        </div>
+                        <div class="input-group">
+                            <label>Наличие на складе</label>
+                            <input type="text" id="adm-stock" class="mfe-input" value="В наличии">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Ссылка на изображение (URL)</label>
+                        <input type="text" id="adm-img" class="mfe-input" placeholder="https://...">
+                    </div>
+                    <button class="mfe-btn" onclick="processProductSave()" style="height: 60px; font-size: 14px;">СОХРАНИТЬ В БАЗУ ДАННЫХ</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function filter(c) { render(c); }
-    function toggleAdmin(s) { document.getElementById('admin-screen').style.display = s ? 'flex' : 'none'; if(s) updateAdminList(); }
+    <div id="side-drawer" class="modal-overlay" onclick="if(event.target == this) this.style.display='none'">
+        <div class="modal-body" style="width: 450px; margin-left: auto; height: 100vh; grid-template-columns: 1fr;">
+            <div style="padding: 40px;">
+                <h2 id="drawer-title" style="text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #000;">Корзина</h2>
+                <div id="drawer-content" style="max-height: 60vh; overflow-y: auto;"></div>
+                <div id="drawer-footer" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 22px;">
+                        <span>ИТОГО:</span>
+                        <span id="drawer-total">0 ₽</span>
+                    </div>
+                    <button class="mfe-btn" style="margin-top: 30px;">ОФОРМИТЬ ЗАКАЗ</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function addNewProduct() {
-        const title = document.getElementById('adm-title').value;
-        const price = document.getElementById('adm-price').value;
-        const brand = document.getElementById('adm-brand').value;
-        const model = document.getElementById('adm-model').value;
-        const cat = document.getElementById('adm-cat').value;
-        if(title && price) {
-            products.push({ id: Date.now(), cat, brand, model, title, price: parseInt(price), img: 'https://via.placeholder.com/300/fff/000?text=MFE+NEW' });
-            render(); updateAdminList(); alert('Успешно!');
+    <div id="auth-screen" class="modal-overlay">
+        <div class="modal-body" style="width: 400px; height: auto; padding: 40px; grid-template-columns: 1fr;">
+            <h2 style="margin-bottom: 25px; text-align: center;">ЛИЧНЫЙ КАБИНЕТ</h2>
+            <div id="auth-phase-1">
+                <div class="input-group">
+                    <label>E-mail</label>
+                    <input type="email" id="user-email" class="mfe-input">
+                </div>
+                <div class="input-group">
+                    <label>Телефон</label>
+                    <input type="tel" class="mfe-input" placeholder="+7 (___) ___ __ __">
+                </div>
+                <button class="mfe-btn" onclick="goToStep2()">ПОЛУЧИТЬ КОД ПОДТВЕРЖДЕНИЯ</button>
+            </div>
+            <div id="auth-phase-2" style="display: none;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Код был отправлен на указанную почту. Осталось попыток: 5</p>
+                <div class="input-group">
+                    <label>Код из письма</label>
+                    <input type="text" id="verification-code" class="mfe-input" style="text-align: center; font-size: 20px; letter-spacing: 5px;">
+                </div>
+                <div class="input-group">
+                    <label>Как вас зовут?</label>
+                    <input type="text" id="full-name" class="mfe-input">
+                </div>
+                <button class="mfe-btn" onclick="completeAuthProcess()">ВОЙТИ В СИСТЕМУ</button>
+            </div>
+            <button class="mfe-btn btn-secondary" onclick="toggleAuth(false)">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <script>
+        /* БАЗА ДАННЫХ В ПАМЯТИ */
+        let products = [
+            {
+                id: 1,
+                name: "Клюшка Pro Elite MFE",
+                brand: "PRO",
+                price: 25000,
+                oldPrice: 32000,
+                model: "1p-Standard",
+                color: "Carbon Black",
+                stock: "В наличии",
+                cat: "Полевые",
+                img: "https://via.placeholder.com/500?text=STICK+PRO"
+            },
+            {
+                id: 2,
+                name: "Шлем вратаря Bro Safe",
+                brand: "BRO",
+                price: 45000,
+                oldPrice: 0,
+                model: "3b-Titan",
+                color: "White/Red",
+                stock: "Последние 2 шт.",
+                cat: "Вратари",
+                img: "https://via.placeholder.com/500?text=GOALIE+HELM"
+            }
+        ];
+
+        /* СОСТОЯНИЕ КОРЗИНЫ И ИЗБРАННОГО */
+        let cartStorage = [];
+        let favStorage = [];
+        let currentCategoryFilter = 'all';
+
+        /* ГЛАВНАЯ ФУНКЦИЯ ОТРИСОВКИ */
+        function renderCatalog() {
+            const container = document.getElementById('product-container');
+            const maxPrice = parseInt(document.getElementById('price-range').value);
+            const activeBrands = Array.from(document.querySelectorAll('#brand-checklist input:checked')).map(cb => cb.value);
+
+            // Фильтрация массива
+            const filteredList = products.filter(item => {
+                const categoryMatch = (currentCategoryFilter === 'all' || item.cat === currentCategoryFilter);
+                const priceMatch = item.price <= maxPrice;
+                const brandMatch = activeBrands.includes(item.brand);
+                return categoryMatch && priceMatch && brandMatch;
+            });
+
+            // Генерация HTML
+            container.innerHTML = filteredList.map(item => `
+                <div class="product-card" onclick="openProductDetail(${item.id})">
+                    <img src="${item.img}" alt="${item.name}">
+                    <div class="card-brand">${item.brand} | ${item.model}</div>
+                    <div class="card-title">${item.name}</div>
+                    <div class="price-container">
+                        <span class="price-current">${item.price.toLocaleString()} ₽</span>
+                        ${item.oldPrice > 0 ? `<span class="price-old">${item.oldPrice.toLocaleString()} ₽</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
         }
-    }
 
-    function updateAdminList() {
-        document.getElementById('admin-table-body').innerHTML = products.map(p => `
-            <tr><td>${p.title}</td><td>${p.price} ₽</td>
-            <td><button onclick="removeP(${p.id})" style="color:red; background:none; border:none; cursor:pointer;">УДАЛИТЬ</button></td></tr>
-        `).join('');
-    }
+        /* ФУНКЦИИ ФИЛЬТРОВ */
+        function handlePriceChange(val) {
+            document.getElementById('price-label').innerText = parseInt(val).toLocaleString();
+            renderCatalog();
+        }
 
-    function removeP(id) { products = products.filter(p => p.id !== id); updateAdminList(); render(); }
-</script>
+        function changeCategory(catName, element) {
+            currentCategoryFilter = catName;
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+            renderCatalog();
+        }
+
+        function applyFilters() {
+            renderCatalog();
+        }
+
+        /* ДЕТАЛЬНАЯ КАРТОЧКА */
+        function openProductDetail(productId) {
+            const target = products.find(p => p.id === productId);
+            if(!target) return;
+
+            document.getElementById('modal-img-wrap').innerHTML = `<img src="${target.img}" style="max-width:100%; max-height:100%;">`;
+            document.getElementById('modal-brand-tag').innerText = target.brand;
+            document.getElementById('modal-title').innerText = target.name;
+            document.getElementById('modal-specs').innerText = `Модель: ${target.model} // Цвет: ${target.color} // Категория: ${target.cat}`;
+            document.getElementById('modal-stock').innerText = `Статус: ${target.stock}`;
+            document.getElementById('modal-new-price').innerText = target.price.toLocaleString() + ' ₽';
+            document.getElementById('modal-old-price').innerText = target.oldPrice > 0 ? target.oldPrice.toLocaleString() + ' ₽' : '';
+            
+            document.getElementById('main-buy-btn').onclick = () => {
+                cartStorage.push(target);
+                updateUIBadges();
+                alert('Товар добавлен в корзину МФЭ!');
+            };
+
+            document.getElementById('main-fav-btn').onclick = () => {
+                favStorage.push(target);
+                updateUIBadges();
+                alert('Добавлено в избранное');
+            };
+
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        /* CRM / АДМИНКА */
+        function toggleAdmin(isOpen) {
+            document.getElementById('admin-modal').style.display = isOpen ? 'flex' : 'none';
+        }
+
+        function processProductSave() {
+            const newObj = {
+                id: Date.now(),
+                name: document.getElementById('adm-name').value,
+                brand: document.getElementById('adm-brand').value,
+                price: parseInt(document.getElementById('adm-price').value || 0),
+                oldPrice: parseInt(document.getElementById('adm-old').value || 0),
+                model: document.getElementById('adm-model').value,
+                cat: document.getElementById('adm-cat').value,
+                color: document.getElementById('adm-color').value,
+                stock: document.getElementById('adm-stock').value,
+                img: document.getElementById('adm-img').value || "https://via.placeholder.com/500?text=MFE+NEW+PRODUCT"
+            };
+
+            if(newObj.name === "") {
+                alert("Укажите название!");
+                return;
+            }
+
+            products.push(newObj);
+            renderCatalog();
+            toggleAdmin(false);
+            alert("Товар успешно интегрирован в систему!");
+        }
+
+        /* КОРЗИНА И ЛИЧНЫЙ КАБИНЕТ */
+        function updateUIBadges() {
+            document.getElementById('cart-count').innerText = cartStorage.length;
+            document.getElementById('fav-count').innerText = favStorage.length;
+        }
+
+        function showSideModal(type) {
+            const title = document.getElementById('drawer-title');
+            const content = document.getElementById('drawer-content');
+            const footer = document.getElementById('drawer-footer');
+            
+            if(type === 'cart') {
+                title.innerText = "Ваша корзина";
+                const sum = cartStorage.reduce((a, b) => a + b.price, 0);
+                content.innerHTML = cartStorage.map(i => `
+                    <div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #eee;">
+                        <span style="font-size:13px; font-weight:700;">${i.name}</span>
+                        <span style="color:var(--mfe-red); font-weight:900;">${i.price.toLocaleString()} ₽</span>
+                    </div>
+                `).join('');
+                document.getElementById('drawer-total').innerText = sum.toLocaleString() + ' ₽';
+                footer.style.display = 'block';
+            } else {
+                title.innerText = "Избранное";
+                content.innerHTML = favStorage.map(i => `
+                    <div style="padding:15px 0; border-bottom:1px solid #eee;">
+                        <div style="font-size:13px; font-weight:700;">${i.name}</div>
+                        <div style="font-size:10px; color: #999;">${i.brand} | ${i.model}</div>
+                    </div>
+                `).join('');
+                footer.style.display = 'none';
+            }
+            document.getElementById('side-drawer').style.display = 'flex';
+        }
+
+        function toggleAuth(show) { document.getElementById('auth-screen').style.display = show ? 'flex' : 'none'; }
+        function goToStep2() { document.getElementById('auth-phase-1').style.display = 'none'; document.getElementById('auth-phase-2').style.display = 'block'; }
+        function completeAuthProcess() {
+            const name = document.getElementById('full-name').value;
+            document.getElementById('user-display').innerText = name ? name.substring(0, 8) : "ПРОФИЛЬ";
+            toggleAuth(false);
+            alert("Авторизация успешна!");
+        }
+
+        /* ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ */
+        window.onload = function() {
+            renderCatalog();
+            console.log("MFE Engine Started...");
+        };
+    </script>
 </body>
 </html>
