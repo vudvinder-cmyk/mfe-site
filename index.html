@@ -3,755 +3,536 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>МФЭ | Магазин Флорбольной Экипировки</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-    
+    <title>МФЭ CORE | PROFESSIONAL EDITION v7.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        /* =========================================
-           ОСНОВНЫЕ ПЕРЕМЕННЫЕ И СТИЛИ
-           ========================================= */
         :root {
             --mfe-red: #e31e24;
-            --mfe-black: #000000;
+            --mfe-black: #0a0a0a;
+            --mfe-dark-gray: #1a1a1a;
+            --mfe-light-gray: #f4f4f4;
+            --mfe-border: #eeeeee;
             --mfe-white: #ffffff;
-            --mfe-gray-light: #f4f4f4;
-            --mfe-gray-dark: #333333;
-            --border-color: #dddddd;
-            --adm-bg: #1a1a1a;
+            --mfe-shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
+            --mfe-shadow-hard: 0 20px 50px rgba(0,0,0,0.15);
+            --mfe-ease: cubic-bezier(0.65, 0, 0.35, 1);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            outline: none;
+        /* --- БАЗОВЫЕ СТИЛИ --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: 'Inter', sans-serif; background: var(--mfe-white); color: var(--mfe-black); overflow-x: hidden; line-height: 1.6; }
+        
+        /* --- АНИМАЦИИ --- */
+        @keyframes loaderPulse { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.3; transform: scale(0.9); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .anim-slide-up { animation: slideUp 0.8s var(--mfe-ease) forwards; }
+        .anim-fade { animation: fadeIn 0.5s ease forwards; }
+
+        /* --- ЗАГРУЗКА --- */
+        #mfe-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--mfe-black); z-index: 10000; display: flex; 
+            flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.8s var(--mfe-ease);
+        }
+        .loader-logo { font-family: 'Orbitron'; font-size: 55px; color: var(--mfe-red); font-weight: 900; animation: loaderPulse 2s infinite; }
+        .loader-status { color: #555; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-top: 20px; font-weight: 700; }
+
+        /* --- ХЕДЕР --- */
+        header { 
+            position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.85); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid var(--mfe-border); 
+        }
+        .h-main { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; }
+        
+        .logo-box { display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; color: inherit; }
+        .logo-box .m-text { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; color: var(--mfe-red); line-height: 1; }
+        .logo-box .s-text { font-size: 9px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-top: 4px; }
+
+        .h-tools { display: flex; gap: 25px; align-items: center; }
+        .tool-link { position: relative; cursor: pointer; font-size: 24px; transition: 0.3s var(--mfe-ease); display: flex; align-items: center; }
+        .tool-link:hover { transform: translateY(-3px); color: var(--mfe-red); }
+        .badge { 
+            position: absolute; top: -8px; right: -12px; background: var(--mfe-red); 
+            color: #fff; font-size: 10px; font-weight: 900; padding: 2px 7px; 
+            border-radius: 20px; border: 2px solid #fff; 
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--mfe-white);
-            color: var(--mfe-black);
-            line-height: 1.6;
+        /* --- НАВИГАЦИЯ --- */
+        .nav-bar { border-top: 1px solid var(--mfe-border); display: flex; justify-content: center; overflow-x: auto; background: #fff; }
+        .nav-link { 
+            padding: 20px 30px; font-size: 11px; font-weight: 900; text-transform: uppercase; 
+            color: #888; cursor: pointer; transition: 0.3s; position: relative; white-space: nowrap;
+        }
+        .nav-link.active { color: var(--mfe-red); }
+        .nav-link.active::after { 
+            content: ''; position: absolute; bottom: 0; left: 25%; width: 50%; 
+            height: 3px; background: var(--mfe-red); border-radius: 10px 10px 0 0; 
         }
 
-        /* =========================================
-           ШАПКА САЙТА (HEADER)
-           ========================================= */
-        header {
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            background: #fff;
-            z-index: 1000;
+        .sub-bar { 
+            background: var(--mfe-light-gray); display: none; justify-content: center; 
+            gap: 15px; padding: 15px; border-bottom: 1px solid var(--mfe-border); 
+            animation: fadeIn 0.4s ease; 
         }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 5%;
-            min-height: 90px;
+        .sub-bar.active { display: flex; }
+        .sub-pill { 
+            padding: 8px 20px; background: #fff; border: 1px solid #ddd; 
+            border-radius: 30px; font-size: 10px; font-weight: 800; text-transform: uppercase; 
+            cursor: pointer; transition: 0.3s; 
         }
+        .sub-pill:hover, .sub-pill.active { background: var(--mfe-red); color: #fff; border-color: var(--mfe-red); }
 
-        /* ЛОГОТИП ОТ СЛАВЫ */
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-            cursor: pointer;
-            text-transform: uppercase;
+        /* --- КАТАЛОГ --- */
+        .page-layout { display: grid; grid-template-columns: 300px 1fr; gap: 50px; padding: 40px 5%; }
+        @media (max-width: 1100px) { .page-layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+        .filter-group { margin-bottom: 40px; }
+        .filter-group h4 { font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 25px; color: #999; letter-spacing: 1px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 40px; }
+        .card { 
+            background: #fff; border-radius: 15px; padding: 30px; border: 1px solid var(--mfe-border); 
+            transition: 0.5s var(--mfe-ease); cursor: pointer; position: relative; 
+            display: flex; flex-direction: column; 
         }
+        .card:hover { border-color: var(--mfe-red); box-shadow: var(--mfe-shadow-hard); transform: translateY(-15px); }
+        .card-img { width: 100%; height: 230px; object-fit: contain; margin-bottom: 25px; transition: 0.5s; }
+        .card:hover .card-img { transform: scale(1.08); }
+        .card-brand { color: var(--mfe-red); font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+        .card-name { font-weight: 700; font-size: 18px; margin-bottom: 15px; line-height: 1.4; height: 50px; overflow: hidden; }
+        .card-price { font-size: 24px; font-weight: 900; color: var(--mfe-black); margin-top: auto; }
 
-        .logo-container .top-label {
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 2px;
+        /* --- БОКОВЫЕ ПАНЕЛИ (DRAWERS) --- */
+        .drawer { 
+            position: fixed; top: 0; right: -500px; width: 500px; height: 100%; 
+            background: #fff; z-index: 2000; box-shadow: -20px 0 60px rgba(0,0,0,0.1); 
+            transition: 0.6s var(--mfe-ease); padding: 60px 50px; display: flex; flex-direction: column; 
         }
-
-        .logo-container .main-mfe {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--mfe-red);
-            line-height: 0.9;
-            margin: 2px 0;
+        .drawer.active { right: 0; }
+        .drawer-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); z-index: 1999; 
+            display: none; animation: fadeIn 0.4s ease; 
         }
-
-        .header-actions {
-            display: flex;
-            gap: 25px;
-            align-items: center;
+        .drawer-close { position: absolute; top: 30px; left: 30px; cursor: pointer; font-size: 30px; color: #ccc; }
+        
+        .drawer-item { 
+            display: flex; align-items: center; gap: 20px; padding: 25px 0; 
+            border-bottom: 1px solid var(--mfe-border); animation: slideUp 0.5s ease forwards; 
         }
+        .drawer-item img { width: 80px; height: 80px; object-fit: contain; background: var(--mfe-light-gray); border-radius: 12px; }
 
-        .action-item {
-            position: relative;
-            cursor: pointer;
-            font-size: 20px;
-            transition: 0.2s;
+        /* --- МОДАЛЬНЫЕ ОКНА --- */
+        .modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 3000; 
+            display: none; align-items: center; justify-content: center; padding: 20px; 
         }
-
-        .action-item:hover {
-            color: var(--mfe-red);
+        .modal-box { 
+            background: #fff; width: 100%; max-width: 1200px; height: 85vh; 
+            border-radius: 25px; display: grid; grid-template-columns: 1.2fr 1fr; 
+            overflow: hidden; animation: scaleIn 0.5s var(--mfe-ease); position: relative; 
         }
+        @media (max-width: 900px) { .modal-box { grid-template-columns: 1fr; overflow-y: auto; height: 95vh; } }
 
-        .counter-badge {
-            position: absolute;
-            top: -8px;
-            right: -12px;
-            background: var(--mfe-red);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 900;
-            padding: 2px 6px;
-            border-radius: 50%;
+        /* --- ПРОФИЛЬ --- */
+        .profile-container { text-align: center; width: 100%; }
+        .avatar { 
+            width: 100px; height: 100px; background: var(--mfe-light-gray); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 40px; margin: 0 auto 25px; border: 4px solid var(--mfe-border); 
         }
-
-        /* НАВИГАЦИЯ */
-        .navigation {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            border-top: 1px solid var(--border-color);
-            background: #fff;
+        .stat-card { 
+            background: var(--mfe-light-gray); padding: 20px; border-radius: 20px; 
+            margin: 30px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
         }
+        .stat-item { background: #fff; padding: 15px; border-radius: 15px; }
+        .stat-val { display: block; font-size: 20px; font-weight: 900; color: var(--mfe-red); }
+        .stat-label { font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase; }
 
-        .nav-link {
-            padding: 18px 10px;
-            font-weight: 800;
-            font-size: 11px;
-            text-transform: uppercase;
-            cursor: pointer;
-            color: #555;
-            transition: 0.3s;
+        /* --- АДМИНКА --- */
+        #crm-ui { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 5000; display: none; grid-template-columns: 350px 1fr; }
+        .crm-aside { background: var(--mfe-black); color: #fff; padding: 60px 40px; }
+        .crm-body { background: #fafafa; padding: 60px; overflow-y: auto; }
+        .crm-card { background: #fff; border: 1px solid #eee; padding: 35px; border-radius: 25px; margin-bottom: 40px; }
+
+        /* --- ФОРМЫ --- */
+        .mfe-input { 
+            width: 100%; padding: 18px; border: 1px solid #ddd; border-radius: 15px; 
+            margin-bottom: 20px; font-family: 'Inter'; font-weight: 600; font-size: 15px; 
+            transition: 0.3s; background: #fff; 
         }
-
-        .nav-link:hover, .nav-link.active {
-            color: var(--mfe-red);
-            box-shadow: inset 0 -3px 0 var(--mfe-red);
+        .mfe-input:focus { border-color: var(--mfe-red); box-shadow: 0 0 0 5px rgba(227,30,36,0.1); }
+        .mfe-btn { 
+            background: var(--mfe-black); color: #fff; border: none; padding: 20px 40px; 
+            border-radius: 15px; font-weight: 800; text-transform: uppercase; cursor: pointer; 
+            transition: 0.3s var(--mfe-ease); width: 100%; letter-spacing: 1px; 
         }
-
-        /* =========================================
-           ОСНОВНОЙ КОНТЕНТ (GRID)
-           ========================================= */
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 40px;
-            padding: 40px 5%;
-        }
-
-        /* БОКОВАЯ ПАНЕЛЬ (ФИЛЬТРЫ) */
-        .sidebar-filter {
-            position: sticky;
-            top: 150px;
-        }
-
-        .filter-section {
-            margin-bottom: 35px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .filter-section h4 {
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin: 10px 0;
-            accent-color: var(--mfe-red);
-            cursor: pointer;
-        }
-
-        .brand-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-
-        /* КАТАЛОГ ТОВАРОВ */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 25px;
-        }
-
-        .product-card {
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            background: #fff;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card:hover {
-            border-color: var(--mfe-red);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: contain;
-            margin-bottom: 15px;
-        }
-
-        .card-brand {
-            font-size: 10px;
-            font-weight: 900;
-            color: #bbb;
-            text-transform: uppercase;
-        }
-
-        .card-title {
-            font-weight: 700;
-            font-size: 15px;
-            margin: 8px 0;
-            height: 45px;
-            overflow: hidden;
-        }
-
-        .price-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: auto;
-        }
-
-        .price-current {
-            font-weight: 900;
-            font-size: 20px;
-            color: var(--mfe-red);
-        }
-
-        .price-old {
-            font-size: 14px;
-            text-decoration: line-through;
-            color: #999;
-        }
-
-        /* =========================================
-           МОДАЛЬНЫЕ ОКНА
-           ========================================= */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-body {
-            background: #fff;
-            width: 95%;
-            max-width: 1100px;
-            height: 85vh;
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            position: relative;
-            animation: modalSlide 0.4s ease;
-        }
-
-        @keyframes modalSlide {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            font-size: 35px;
-            cursor: pointer;
-            z-index: 100;
-        }
-
-        .modal-gallery {
-            background: #f8f8f8;
-            padding: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-info {
-            padding: 50px;
-            overflow-y: auto;
-            border-left: 1px solid #eee;
-        }
-
-        /* АДМИНКА */
-        #admin-panel {
-            grid-template-columns: 260px 1fr;
-            background: #f0f2f5;
-        }
-
-        .admin-sidebar {
-            background: var(--adm-bg);
-            color: #fff;
-            padding: 30px;
-        }
-
-        .admin-form-container {
-            padding: 40px;
-            background: #fff;
-            margin: 30px;
-            border-radius: 4px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #777;
-            margin-bottom: 8px;
-        }
-
-        .mfe-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #dcdcdc;
-            font-family: inherit;
-            transition: 0.2s;
-        }
-
-        .mfe-input:focus {
-            border-color: var(--mfe-red);
-        }
-
-        /* КНОПКИ */
-        .mfe-btn {
-            background: var(--mfe-black);
-            color: #fff;
-            border: none;
-            padding: 16px 25px;
-            font-weight: 800;
-            font-size: 12px;
-            text-transform: uppercase;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-            letter-spacing: 1px;
-        }
-
-        .mfe-btn:hover {
-            background: var(--mfe-red);
-        }
-
-        .btn-secondary {
-            background: #eee;
-            color: #000;
-            margin-top: 10px;
-        }
-
+        .mfe-btn:hover { background: var(--mfe-red); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(227,30,36,0.3); }
+        .mfe-btn.secondary { background: #eee; color: #000; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-top">
-            <div style="width: 150px;">
-                <button onclick="toggleAdmin(true)" class="mfe-btn" style="padding: 8px; font-size: 9px; width: auto;">CRM АДМИН</button>
-            </div>
-            
-            <a class="logo-container" onclick="location.reload()">
-                <span class="top-label">Магазин</span>
-                <span class="main-mfe">МФЭ</span>
-                <span class="top-label">Флорбольной Экипировки</span>
-            </a>
+    <div id="mfe-loader">
+        <div class="loader-logo">МФЭ</div>
+        <div class="loader-status">Инициализация ядра системы...</div>
+    </div>
 
-            <div class="header-actions">
-                <div class="action-item" onclick="showSideModal('fav')">❤️ <span class="counter-badge" id="fav-count">0</span></div>
-                <div class="action-item" onclick="showSideModal('cart')">🛒 <span class="counter-badge" id="cart-count">0</span></div>
-                <div class="action-item" onclick="toggleAuth(true)" id="user-display">👤</div>
+    <header>
+        <div class="h-main">
+            <button onclick="accessCRM()" style="background:none; border:1px solid #000; padding:10px 20px; border-radius:12px; font-weight:900; font-size:11px; cursor:pointer; transition:0.3s;">CRM CORE</button>
+            <div class="logo-box" onclick="location.reload()">
+                <div class="m-text">МФЭ</div>
+                <div class="s-text">Technology & Equipment</div>
+            </div>
+            <div class="h-tools">
+                <div class="tool-link" onclick="openDrawer('fav')">❤️<span class="badge" id="fav-count">0</span></div>
+                <div class="tool-link" onclick="openDrawer('cart')">🛒<span class="badge" id="cart-count">0</span></div>
+                <div class="tool-link" onclick="toggleProfile()">👤</div>
             </div>
         </div>
-
-        <nav class="navigation">
-            <div class="nav-link active" onclick="changeCategory('all', this)">Все товары</div>
-            <div class="nav-link" onclick="changeCategory('Полевые', this)">Полевые</div>
-            <div class="nav-link" onclick="changeCategory('Вратари', this)">Вратари</div>
-            <div class="nav-link" onclick="changeCategory('Клубы', this)">Клубы</div>
-            <div class="nav-link" onclick="changeCategory('Заказ формы', this)">Заказ формы</div>
-        </nav>
+        <nav class="nav-bar" id="main-nav"></nav>
+        <div class="sub-bar" id="sub-nav"></div>
     </header>
 
-    <div class="content-wrapper">
-        <aside class="sidebar-filter">
-            <div class="filter-section">
-                <h4>Цена до: <span id="price-label">1 000 000</span> ₽</h4>
-                <input type="range" id="price-range" min="0" max="1000000" step="5000" value="1000000" oninput="handlePriceChange(this.value)">
+    <div class="page-layout">
+        <aside class="sidebar">
+            <div class="filter-group">
+                <h4>Бюджет до: <span id="price-val" style="color:var(--mfe-red)">1 000 000</span> ₽</h4>
+                <input type="range" min="0" max="1000000" step="5000" value="1000000" style="width:100%; accent-color:var(--mfe-red)" oninput="filterByPrice(this.value)">
             </div>
-            
-            <div class="filter-section">
+            <div class="filter-group">
                 <h4>Бренды</h4>
-                <div id="brand-checklist">
-                    <label class="brand-label"><input type="checkbox" value="PRO" checked onchange="applyFilters()"> PRO</label>
-                    <label class="brand-label"><input type="checkbox" value="BRO" checked onchange="applyFilters()"> BRO</label>
-                    <label class="brand-label"><input type="checkbox" value="SPORT" checked onchange="applyFilters()"> SPORT</label>
-                </div>
+                <div id="brand-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+            <div class="filter-group">
+                <h4>Цветовая гамма</h4>
+                <div id="color-list" style="display:flex; gap:12px; flex-wrap:wrap;"></div>
             </div>
         </aside>
 
         <main>
-            <div class="product-grid" id="product-container">
-                </div>
+            <div class="grid" id="main-grid"></div>
         </main>
     </div>
 
-    <div id="product-modal" class="modal-overlay" onclick="if(event.target == this) this.style.display='none'">
-        <div class="modal-body">
-            <span class="modal-close" onclick="document.getElementById('product-modal').style.display='none'">&times;</span>
-            <div class="modal-gallery" id="modal-img-wrap"></div>
-            <div class="modal-info">
-                <div id="modal-brand-tag" style="color: var(--mfe-red); font-weight: 900; font-size: 12px; margin-bottom: 10px;"></div>
-                <h2 id="modal-title" style="font-size: 28px; margin-bottom: 15px;"></h2>
-                <div id="modal-specs" style="color: #666; font-size: 14px; margin-bottom: 25px;"></div>
-                
-                <div style="background: #fdfdfd; padding: 20px; border: 1px solid #eee; margin-bottom: 30px;">
-                    <div id="modal-old-price" class="price-old"></div>
-                    <div id="modal-new-price" class="price-current" style="font-size: 36px;"></div>
-                    <div id="modal-stock" style="font-size: 12px; color: #27ae60; font-weight: 700; margin-top: 5px;"></div>
+    <div id="modal-profile" class="modal">
+        <div class="modal-box" style="max-width:450px; grid-template-columns:1fr; padding:50px;">
+            <span class="drawer-close" onclick="toggleProfile()">&times;</span>
+            <div id="auth-ui">
+                <h2 style="text-align:center; margin-bottom:35px; font-weight:900;">АККАУНТ МФЭ</h2>
+                <input type="text" id="auth-user" class="mfe-input" placeholder="Логин">
+                <input type="password" id="auth-pass" class="mfe-input" placeholder="Пароль">
+                <button class="mfe-btn" onclick="handleLogin()">ВОЙТИ / СОЗДАТЬ</button>
+            </div>
+            <div id="profile-ui" style="display:none;" class="profile-container">
+                <div class="avatar">👤</div>
+                <h2 id="prof-name" style="font-weight:900;"></h2>
+                <div class="stat-card">
+                    <div class="stat-item"><span class="stat-val" id="stat-orders">0</span><span class="stat-label">Заказов</span></div>
+                    <div class="stat-item"><span class="stat-val">PRO</span><span class="stat-label">Статус</span></div>
                 </div>
-
-                <button class="mfe-btn" id="main-buy-btn">Добавить в корзину</button>
-                <button class="mfe-btn btn-secondary" id="main-fav-btn">В избранное</button>
-                <button class="mfe-btn btn-secondary" style="font-size: 10px;" onclick="alert('Ссылка скопирована!')">Поделиться товаром</button>
-                
-                <div style="margin-top: 40px;">
-                    <h4 style="text-transform: uppercase; font-size: 11px; margin-bottom: 10px;">Описание</h4>
-                    <p style="font-size: 14px; color: #555; line-height: 1.8;">Профессиональное решение для тех, кто ценит качество МФЭ. Данная модель прошла тестирование ведущими игроками лиги.</p>
-                </div>
+                <button class="mfe-btn secondary" onclick="handleLogout()">ВЫЙТИ ИЗ СИСТЕМЫ</button>
             </div>
         </div>
     </div>
 
-    <div id="admin-modal" class="modal-overlay" style="align-items: flex-start;">
-        <div class="modal-body" id="admin-panel" style="width: 100%; height: 100vh; max-width: none;">
-            <div class="admin-sidebar">
-                <h2 style="font-family: 'Orbitron'; color: var(--mfe-red); margin-bottom: 40px;">MFE_CORE</h2>
-                <div style="font-size: 13px; font-weight: 700; display: flex; flex-direction: column; gap: 20px;">
-                    <div style="color: var(--mfe-red);">📦 ТОВАРЫ И СКЛАД</div>
-                    <div style="opacity: 0.3;">📊 АНАЛИТИКА ТРАФИКА</div>
-                    <div style="opacity: 0.3;">📨 ЗАКАЗЫ КЛИЕНТОВ</div>
-                    <div style="opacity: 0.3;">⚙️ НАСТРОЙКИ САЙТА</div>
+    <div id="crm-ui">
+        <aside class="crm-aside">
+            <h1 style="font-family:'Orbitron'; color:var(--mfe-red); font-size:40px; margin-bottom:60px;">MFE CORE</h1>
+            <button class="mfe-btn" onclick="document.getElementById('crm-ui').style.display='none'">ВЕРНУТЬСЯ НА САЙТ</button>
+        </aside>
+        <main class="crm-body">
+            <div style="display:grid; grid-template-columns:1fr 1.2fr; gap:40px;">
+                <div class="crm-card">
+                    <h3 style="margin-bottom:30px;">1. Навигация</h3>
+                    <input type="text" id="adm-cat" class="mfe-input" placeholder="Класс (напр: ИГРОКИ)">
+                    <input type="text" id="adm-subs" class="mfe-input" placeholder="Подтипы (через запятую)">
+                    <button class="mfe-btn" onclick="addStructure()">СОХРАНИТЬ КАТЕГОРИЮ</button>
+                </div>
+                <div class="crm-card">
+                    <h3 style="margin-bottom:30px;">2. Добавить товар</h3>
+                    <input type="text" id="p-title" class="mfe-input" placeholder="Название товара">
+                    <textarea id="p-desc" class="mfe-input" style="height:100px;" placeholder="Техническое описание"></textarea>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <input type="number" id="p-price" class="mfe-input" placeholder="Цена ₽">
+                        <input type="text" id="p-brand" class="mfe-input" placeholder="Бренд">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <select id="p-cat" class="mfe-input" onchange="syncSubs()"></select>
+                        <select id="p-sub" class="mfe-input"></select>
+                    </div>
+                    <div style="display:grid; grid-template-columns:120px 1fr; gap:15px;">
+                        <input type="color" id="p-color" class="mfe-input" style="height:60px; padding:5px;">
+                        <input type="text" id="p-img" class="mfe-input" placeholder="URL изображения">
+                    </div>
+                    <button class="mfe-btn" style="background:var(--mfe-red)" onclick="saveToDB()">ОПУБЛИКОВАТЬ В МАГАЗИНЕ</button>
                 </div>
             </div>
-            <div style="overflow-y: auto;">
-                <div style="padding: 20px 40px; background: #fff; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 16px;">ДОБАВЛЕНИЕ НОВОЙ ПОЗИЦИИ В КАТАЛОГ</h3>
-                    <button class="mfe-btn" onclick="toggleAdmin(false)" style="width: auto; padding: 10px 30px;">ВЫЙТИ ИЗ CRM</button>
-                </div>
-                
-                <div class="admin-form-container">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
-                        <div class="input-group">
-                            <label>Название товара</label>
-                            <input type="text" id="adm-name" class="mfe-input" placeholder="Введите название...">
-                        </div>
-                        <div class="input-group">
-                            <label>Бренд</label>
-                            <select id="adm-brand" class="mfe-input">
-                                <option>PRO</option>
-                                <option>BRO</option>
-                                <option>SPORT</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Цена продажи (₽)</label>
-                            <input type="number" id="adm-price" class="mfe-input">
-                        </div>
-                        <div class="input-group">
-                            <label>Старая цена (для скидки)</label>
-                            <input type="number" id="adm-old" class="mfe-input">
-                        </div>
-                        <div class="input-group">
-                            <label>Модель (РУЧНОЙ ВВОД)</label>
-                            <input type="text" id="adm-model" class="mfe-input" placeholder="Напр: 4p-Turbo">
-                        </div>
-                        <div class="input-group">
-                            <label>Сфера отображения</label>
-                            <select id="adm-cat" class="mfe-input">
-                                <option>Полевые</option>
-                                <option>Вратари</option>
-                                <option>Клубы</option>
-                                <option>Заказ формы</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Цвет</label>
-                            <input type="text" id="adm-color" class="mfe-input">
-                        </div>
-                        <div class="input-group">
-                            <label>Наличие на складе</label>
-                            <input type="text" id="adm-stock" class="mfe-input" value="В наличии">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Ссылка на изображение (URL)</label>
-                        <input type="text" id="adm-img" class="mfe-input" placeholder="https://...">
-                    </div>
-                    <button class="mfe-btn" onclick="processProductSave()" style="height: 60px; font-size: 14px;">СОХРАНИТЬ В БАЗУ ДАННЫХ</button>
-                </div>
+            <div class="crm-card" id="db-list"></div>
+        </main>
+    </div>
+
+    <div id="overlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
+    <div id="drawer-main" class="drawer">
+        <span class="drawer-close" onclick="closeAllDrawers()">&times;</span>
+        <h2 id="dr-title" style="font-weight:900; margin-bottom:40px; text-transform:uppercase; letter-spacing:2px;">КОРЗИНА</h2>
+        <div id="dr-content" style="flex-grow:1; overflow-y:auto;"></div>
+        <div id="dr-footer">
+            <div style="display:flex; justify-content:space-between; font-weight:900; font-size:28px; border-top:2px solid #000; padding-top:20px;">
+                <span>ИТОГО:</span><span id="dr-total">0 ₽</span>
             </div>
+            <button class="mfe-btn" style="margin-top:30px;" onclick="processOrder()">ОПЛАТИТЬ ЗАКАЗ</button>
         </div>
     </div>
 
-    <div id="side-drawer" class="modal-overlay" onclick="if(event.target == this) this.style.display='none'">
-        <div class="modal-body" style="width: 450px; margin-left: auto; height: 100vh; grid-template-columns: 1fr;">
-            <div style="padding: 40px;">
-                <h2 id="drawer-title" style="text-transform: uppercase; margin-bottom: 30px; border-bottom: 2px solid #000;">Корзина</h2>
-                <div id="drawer-content" style="max-height: 60vh; overflow-y: auto;"></div>
-                <div id="drawer-footer" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
-                    <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 22px;">
-                        <span>ИТОГО:</span>
-                        <span id="drawer-total">0 ₽</span>
-                    </div>
-                    <button class="mfe-btn" style="margin-top: 30px;">ОФОРМИТЬ ЗАКАЗ</button>
+    <div id="modal-product" class="modal">
+        <div class="modal-box">
+            <span class="drawer-close" onclick="document.getElementById('modal-product').style.display='none'">&times;</span>
+            <div style="background:var(--mfe-light-gray); display:flex; align-items:center; justify-content:center; padding:50px;" id="view-img"></div>
+            <div style="padding:60px; overflow-y:auto;">
+                <div id="view-brand" style="color:var(--mfe-red); font-weight:900; font-size:12px; margin-bottom:15px;"></div>
+                <h1 id="view-name" style="font-size:42px; font-weight:900; line-height:1.1; margin-bottom:25px;"></h1>
+                <p id="view-desc" style="color:#666; font-size:16px; margin-bottom:40px; line-height:1.8;"></p>
+                <div id="view-price" style="font-size:45px; font-weight:900; margin-bottom:50px;"></div>
+                <div style="display:flex; gap:20px;">
+                    <button class="mfe-btn" id="btn-cart">В КОРЗИНУ</button>
+                    <button class="mfe-btn secondary" id="btn-fav" style="width:100px;">❤️</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="auth-screen" class="modal-overlay">
-        <div class="modal-body" style="width: 400px; height: auto; padding: 40px; grid-template-columns: 1fr;">
-            <h2 style="margin-bottom: 25px; text-align: center;">ЛИЧНЫЙ КАБИНЕТ</h2>
-            <div id="auth-phase-1">
-                <div class="input-group">
-                    <label>E-mail</label>
-                    <input type="email" id="user-email" class="mfe-input">
-                </div>
-                <div class="input-group">
-                    <label>Телефон</label>
-                    <input type="tel" class="mfe-input" placeholder="+7 (___) ___ __ __">
-                </div>
-                <button class="mfe-btn" onclick="goToStep2()">ПОЛУЧИТЬ КОД ПОДТВЕРЖДЕНИЯ</button>
-            </div>
-            <div id="auth-phase-2" style="display: none;">
-                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Код был отправлен на указанную почту. Осталось попыток: 5</p>
-                <div class="input-group">
-                    <label>Код из письма</label>
-                    <input type="text" id="verification-code" class="mfe-input" style="text-align: center; font-size: 20px; letter-spacing: 5px;">
-                </div>
-                <div class="input-group">
-                    <label>Как вас зовут?</label>
-                    <input type="text" id="full-name" class="mfe-input">
-                </div>
-                <button class="mfe-btn" onclick="completeAuthProcess()">ВОЙТИ В СИСТЕМУ</button>
-            </div>
-            <button class="mfe-btn btn-secondary" onclick="toggleAuth(false)">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <script>
-        /* БАЗА ДАННЫХ В ПАМЯТИ */
-        let products = [
-            {
-                id: 1,
-                name: "Клюшка Pro Elite MFE",
-                brand: "PRO",
-                price: 25000,
-                oldPrice: 32000,
-                model: "1p-Standard",
-                color: "Carbon Black",
-                stock: "В наличии",
-                cat: "Полевые",
-                img: "https://via.placeholder.com/500?text=STICK+PRO"
-            },
-            {
-                id: 2,
-                name: "Шлем вратаря Bro Safe",
-                brand: "BRO",
-                price: 45000,
-                oldPrice: 0,
-                model: "3b-Titan",
-                color: "White/Red",
-                stock: "Последние 2 шт.",
-                cat: "Вратари",
-                img: "https://via.placeholder.com/500?text=GOALIE+HELM"
-            }
-        ];
+        // --- DATA ENGINE ---
+        let state = {
+            currentUser: null,
+            categories: [
+                { name: 'Все', subs: [] },
+                { name: 'Полевые', subs: ['Клюшки', 'Обмотки', 'Защита'] },
+                { name: 'Вратари', subs: ['Шлемы', 'Нагрудники', 'Штаны'] }
+            ],
+            products: [
+                { id: 1, name: "MFE Carbon X-Gen 2026", desc: "Флагманская клюшка из авиационного карбона. Вес всего 185 грамм. Максимальная точность броска.", price: 28500, brand: "MFE", cat: "Полевые", sub: "Клюшки", color: "#e31e24", img: "https://via.placeholder.com/600?text=CARBON+X" }
+            ],
+            cart: [],
+            fav: [],
+            filter: { cat: 'Все', sub: '', price: 1000000, col: 'all', brands: [] }
+        };
 
-        /* СОСТОЯНИЕ КОРЗИНЫ И ИЗБРАННОГО */
-        let cartStorage = [];
-        let favStorage = [];
-        let currentCategoryFilter = 'all';
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('mfe-loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('mfe-loader').style.display = 'none', 800);
+            }, 1500);
+            refreshUI();
+        };
 
-        /* ГЛАВНАЯ ФУНКЦИЯ ОТРИСОВКИ */
+        function refreshUI() {
+            renderNav();
+            renderCatalog();
+            renderFilters();
+            syncCrmForm();
+        }
+
+        // --- NAVIGATION ---
+        function renderNav() {
+            const nav = document.getElementById('main-nav');
+            nav.innerHTML = state.categories.map(c => `
+                <div class="nav-link ${state.filter.cat === c.name ? 'active' : ''}" onclick="setCategory('${c.name}')">${c.name}</div>
+            `).join('');
+
+            const sub = document.getElementById('sub-nav');
+            const activeCat = state.categories.find(c => c.name === state.filter.cat);
+            if(activeCat && activeCat.subs.length > 0) {
+                sub.classList.add('active');
+                sub.innerHTML = activeCat.subs.map(s => `
+                    <div class="sub-pill ${state.filter.sub === s ? 'active' : ''}" onclick="setSub('${s}')">${s}</div>
+                `).join('');
+            } else { sub.classList.remove('active'); }
+        }
+
+        function setCategory(c) { state.filter.cat = c; state.filter.sub = ''; refreshUI(); }
+        function setSub(s) { state.filter.sub = (state.filter.sub === s) ? '' : s; refreshUI(); }
+
+        // --- CATALOG & FILTERS ---
+        function renderFilters() {
+            const brands = [...new Set(state.products.map(p => p.brand))];
+            document.getElementById('brand-list').innerHTML = brands.map(b => `
+                <label style="font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" onchange="toggleBrand('${b}')" ${state.filter.brands.includes(b)?'checked':''}> ${b}
+                </label>
+            `).join('');
+
+            const colors = [...new Set(state.products.map(p => p.color))];
+            document.getElementById('color-list').innerHTML = `<div class="sub-pill" onclick="setColor('all')" style="background:#eee">ВСЕ</div>` + 
+                colors.map(c => `<div onclick="setColor('${c}')" style="width:30px; height:30px; border-radius:50%; background:${c}; cursor:pointer; border:2px solid ${state.filter.col===c?'#000':'#eee'}"></div>`).join('');
+        }
+
         function renderCatalog() {
-            const container = document.getElementById('product-container');
-            const maxPrice = parseInt(document.getElementById('price-range').value);
-            const activeBrands = Array.from(document.querySelectorAll('#brand-checklist input:checked')).map(cb => cb.value);
+            const grid = document.getElementById('main-grid');
+            const filtered = state.products.filter(p => 
+                (state.filter.cat === 'Все' || p.cat === state.filter.cat) &&
+                (state.filter.sub === '' || p.sub === state.filter.sub) &&
+                (p.price <= state.filter.price) &&
+                (state.filter.col === 'all' || p.color === state.filter.col) &&
+                (state.filter.brands.length === 0 || state.filter.brands.includes(p.brand))
+            );
 
-            // Фильтрация массива
-            const filteredList = products.filter(item => {
-                const categoryMatch = (currentCategoryFilter === 'all' || item.cat === currentCategoryFilter);
-                const priceMatch = item.price <= maxPrice;
-                const brandMatch = activeBrands.includes(item.brand);
-                return categoryMatch && priceMatch && brandMatch;
-            });
+            grid.innerHTML = filtered.map((p, i) => `
+                <div class="card anim-slide-up" style="animation-delay:${i*0.1}s" onclick="viewProduct(${p.id})">
+                    <div style="position:absolute; top:25px; right:25px; width:15px; height:15px; border-radius:50%; background:${p.color}; border:1px solid #ddd;"></div>
+                    <img src="${p.img}" class="card-img">
+                    <div class="card-brand">${p.brand}</div>
+                    <div class="card-name">${p.name}</div>
+                    <div class="card-price">${p.price.toLocaleString()} ₽</div>
+                </div>
+            `).join('');
 
-            // Генерация HTML
-            container.innerHTML = filteredList.map(item => `
-                <div class="product-card" onclick="openProductDetail(${item.id})">
-                    <img src="${item.img}" alt="${item.name}">
-                    <div class="card-brand">${item.brand} | ${item.model}</div>
-                    <div class="card-title">${item.name}</div>
-                    <div class="price-container">
-                        <span class="price-current">${item.price.toLocaleString()} ₽</span>
-                        ${item.oldPrice > 0 ? `<span class="price-old">${item.oldPrice.toLocaleString()} ₽</span>` : ''}
-                    </div>
+            // Список в админке
+            document.getElementById('db-list').innerHTML = `<h3>Товары в базе (${state.products.length})</h3>` + state.products.map(p => `
+                <div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #eee;">
+                    <span><b>${p.name}</b> [${p.brand}]</span>
+                    <button onclick="deleteProduct(${p.id})" style="color:red; background:none; border:none; cursor:pointer; font-weight:800;">УДАЛИТЬ</button>
                 </div>
             `).join('');
         }
 
-        /* ФУНКЦИИ ФИЛЬТРОВ */
-        function handlePriceChange(val) {
-            document.getElementById('price-label').innerText = parseInt(val).toLocaleString();
-            renderCatalog();
+        // --- PRODUCT VIEW ---
+        function viewProduct(id) {
+            const p = state.products.find(x => x.id === id);
+            document.getElementById('view-img').innerHTML = `<img src="${p.img}" style="max-width:100%; max-height:100%; transform: rotate(-5deg);">`;
+            document.getElementById('view-name').innerText = p.name;
+            document.getElementById('view-brand').innerText = p.brand;
+            document.getElementById('view-desc').innerText = p.desc;
+            document.getElementById('view-price').innerText = p.price.toLocaleString() + ' ₽';
+            document.getElementById('btn-cart').onclick = () => { state.cart.push(p); updateBadges(); openDrawer('cart'); };
+            document.getElementById('btn-fav').onclick = () => { if(!state.fav.find(x=>x.id===p.id)) state.fav.push(p); updateBadges(); alert('Добавлено в избранное'); };
+            document.getElementById('modal-product').style.display = 'flex';
         }
 
-        function changeCategory(catName, element) {
-            currentCategoryFilter = catName;
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            element.classList.add('active');
-            renderCatalog();
-        }
-
-        function applyFilters() {
-            renderCatalog();
-        }
-
-        /* ДЕТАЛЬНАЯ КАРТОЧКА */
-        function openProductDetail(productId) {
-            const target = products.find(p => p.id === productId);
-            if(!target) return;
-
-            document.getElementById('modal-img-wrap').innerHTML = `<img src="${target.img}" style="max-width:100%; max-height:100%;">`;
-            document.getElementById('modal-brand-tag').innerText = target.brand;
-            document.getElementById('modal-title').innerText = target.name;
-            document.getElementById('modal-specs').innerText = `Модель: ${target.model} // Цвет: ${target.color} // Категория: ${target.cat}`;
-            document.getElementById('modal-stock').innerText = `Статус: ${target.stock}`;
-            document.getElementById('modal-new-price').innerText = target.price.toLocaleString() + ' ₽';
-            document.getElementById('modal-old-price').innerText = target.oldPrice > 0 ? target.oldPrice.toLocaleString() + ' ₽' : '';
+        // --- SHOPPING LOGIC ---
+        function openDrawer(type) {
+            const dr = document.getElementById('drawer-main');
+            const content = document.getElementById('dr-content');
+            const list = type === 'cart' ? state.cart : state.fav;
             
-            document.getElementById('main-buy-btn').onclick = () => {
-                cartStorage.push(target);
-                updateUIBadges();
-                alert('Товар добавлен в корзину МФЭ!');
-            };
+            document.getElementById('dr-title').innerText = type === 'cart' ? 'Корзина' : 'Избранное';
+            content.innerHTML = list.map(item => `
+                <div class="drawer-item">
+                    <img src="${item.img}">
+                    <div>
+                        <div style="font-weight:800; font-size:16px;">${item.name}</div>
+                        <div style="color:var(--mfe-red); font-weight:900;">${item.price.toLocaleString()} ₽</div>
+                    </div>
+                </div>
+            `).join('');
 
-            document.getElementById('main-fav-btn').onclick = () => {
-                favStorage.push(target);
-                updateUIBadges();
-                alert('Добавлено в избранное');
-            };
-
-            document.getElementById('product-modal').style.display = 'flex';
+            document.getElementById('dr-total').innerText = type === 'cart' ? state.cart.reduce((a,b)=>a+b.price,0).toLocaleString() + ' ₽' : '';
+            document.getElementById('dr-footer').style.display = type === 'cart' ? 'block' : 'none';
+            
+            document.getElementById('overlay').style.display = 'block';
+            dr.classList.add('active');
         }
 
-        /* CRM / АДМИНКА */
-        function toggleAdmin(isOpen) {
-            document.getElementById('admin-modal').style.display = isOpen ? 'flex' : 'none';
+        function closeAllDrawers() {
+            document.getElementById('drawer-main').classList.remove('active');
+            document.getElementById('overlay').style.display = 'none';
         }
 
-        function processProductSave() {
-            const newObj = {
+        // --- PROFILE & AUTH ---
+        function toggleProfile() { 
+            const m = document.getElementById('modal-profile');
+            m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; 
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('auth-user').value;
+            if(user) {
+                state.currentUser = user;
+                document.getElementById('auth-ui').style.display = 'none';
+                document.getElementById('profile-ui').style.display = 'block';
+                document.getElementById('prof-name').innerText = user.toUpperCase();
+                document.getElementById('stat-orders').innerText = Math.floor(Math.random() * 5);
+            }
+        }
+
+        function handleLogout() {
+            state.currentUser = null;
+            document.getElementById('auth-ui').style.display = 'block';
+            document.getElementById('profile-ui').style.display = 'none';
+        }
+
+        function accessCRM() {
+            if(!state.currentUser) { alert('Для доступа к CRM войдите в профиль!'); toggleProfile(); return; }
+            const pass = prompt('ВВЕДИТЕ ПАРОЛЬ ДОСТУПА:');
+            if(pass === '4391') document.getElementById('crm-ui').style.display = 'grid';
+            else alert('ДОСТУП ЗАПРЕЩЕН');
+        }
+
+        // --- CRM ENGINE ---
+        function syncCrmForm() {
+            const catSel = document.getElementById('p-cat');
+            catSel.innerHTML = state.categories.filter(c => c.name !== 'Все').map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            syncSubs();
+        }
+
+        function syncSubs() {
+            const cName = document.getElementById('p-cat').value;
+            const sSel = document.getElementById('p-sub');
+            const active = state.categories.find(c => c.name === cName);
+            sSel.innerHTML = active ? active.subs.map(s => `<option value="${s}">${s}</option>`).join('') : '';
+        }
+
+        function addStructure() {
+            const name = document.getElementById('adm-cat').value;
+            const subs = document.getElementById('adm-subs').value.split(',').map(x => x.trim());
+            if(name) {
+                state.categories.push({ name, subs });
+                refreshUI();
+                alert('СТРУКТУРА ОБНОВЛЕНА');
+            }
+        }
+
+        function saveToDB() {
+            const p = {
                 id: Date.now(),
-                name: document.getElementById('adm-name').value,
-                brand: document.getElementById('adm-brand').value,
-                price: parseInt(document.getElementById('adm-price').value || 0),
-                oldPrice: parseInt(document.getElementById('adm-old').value || 0),
-                model: document.getElementById('adm-model').value,
-                cat: document.getElementById('adm-cat').value,
-                color: document.getElementById('adm-color').value,
-                stock: document.getElementById('adm-stock').value,
-                img: document.getElementById('adm-img').value || "https://via.placeholder.com/500?text=MFE+NEW+PRODUCT"
+                name: document.getElementById('p-title').value,
+                desc: document.getElementById('p-desc').value,
+                price: parseInt(document.getElementById('p-price').value),
+                brand: document.getElementById('p-brand').value,
+                cat: document.getElementById('p-cat').value,
+                sub: document.getElementById('p-sub').value,
+                color: document.getElementById('p-color').value,
+                img: document.getElementById('p-img').value || 'https://via.placeholder.com/600'
             };
-
-            if(newObj.name === "") {
-                alert("Укажите название!");
-                return;
-            }
-
-            products.push(newObj);
-            renderCatalog();
-            toggleAdmin(false);
-            alert("Товар успешно интегрирован в систему!");
+            state.products.push(p);
+            refreshUI();
+            alert('ТОВАР УСПЕШНО ДОБАВЛЕН В БАЗУ');
         }
 
-        /* КОРЗИНА И ЛИЧНЫЙ КАБИНЕТ */
-        function updateUIBadges() {
-            document.getElementById('cart-count').innerText = cartStorage.length;
-            document.getElementById('fav-count').innerText = favStorage.length;
+        function deleteProduct(id) {
+            state.products = state.products.filter(p => p.id !== id);
+            refreshUI();
         }
 
-        function showSideModal(type) {
-            const title = document.getElementById('drawer-title');
-            const content = document.getElementById('drawer-content');
-            const footer = document.getElementById('drawer-footer');
-            
-            if(type === 'cart') {
-                title.innerText = "Ваша корзина";
-                const sum = cartStorage.reduce((a, b) => a + b.price, 0);
-                content.innerHTML = cartStorage.map(i => `
-                    <div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #eee;">
-                        <span style="font-size:13px; font-weight:700;">${i.name}</span>
-                        <span style="color:var(--mfe-red); font-weight:900;">${i.price.toLocaleString()} ₽</span>
-                    </div>
-                `).join('');
-                document.getElementById('drawer-total').innerText = sum.toLocaleString() + ' ₽';
-                footer.style.display = 'block';
-            } else {
-                title.innerText = "Избранное";
-                content.innerHTML = favStorage.map(i => `
-                    <div style="padding:15px 0; border-bottom:1px solid #eee;">
-                        <div style="font-size:13px; font-weight:700;">${i.name}</div>
-                        <div style="font-size:10px; color: #999;">${i.brand} | ${i.model}</div>
-                    </div>
-                `).join('');
-                footer.style.display = 'none';
-            }
-            document.getElementById('side-drawer').style.display = 'flex';
+        // --- UTILS ---
+        function updateBadges() {
+            document.getElementById('cart-count').innerText = state.cart.length;
+            document.getElementById('fav-count').innerText = state.fav.length;
         }
-
-        function toggleAuth(show) { document.getElementById('auth-screen').style.display = show ? 'flex' : 'none'; }
-        function goToStep2() { document.getElementById('auth-phase-1').style.display = 'none'; document.getElementById('auth-phase-2').style.display = 'block'; }
-        function completeAuthProcess() {
-            const name = document.getElementById('full-name').value;
-            document.getElementById('user-display').innerText = name ? name.substring(0, 8) : "ПРОФИЛЬ";
-            toggleAuth(false);
-            alert("Авторизация успешна!");
-        }
-
-        /* ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ */
-        window.onload = function() {
-            renderCatalog();
-            console.log("MFE Engine Started...");
-        };
+        function filterByPrice(v) { state.filter.price = v; document.getElementById('price-val').innerText = parseInt(v).toLocaleString(); renderCatalog(); }
+        function toggleBrand(b) { if(state.filter.brands.includes(b)) state.filter.brands = state.filter.brands.filter(x=>x!==b); else state.filter.brands.push(b); renderCatalog(); }
+        function setColor(c) { state.filter.col = c; renderCatalog(); }
+        function processOrder() { alert('СИСТЕМА ОПЛАТЫ ПОДКЛЮЧЕНА. ОЖИДАНИЕ ТРАНЗАКЦИИ...'); state.cart = []; updateBadges(); closeAllDrawers(); }
     </script>
 </body>
 </html>
+
